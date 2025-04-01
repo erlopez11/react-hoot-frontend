@@ -25,6 +25,21 @@ const App = () => {
     navigate('/hoots');
   }
 
+  const handleDeleteHoot = async (hootId) => {
+    const deletedHoot = await hootService.deleteHoot(hootId);
+    setHoots(hoots.filter((hoot) => hoot._id !== deletedHoot._id));
+    navigate('/hoots');
+  };
+
+  const handleUpdateHoot = async (hootId, hootFormData) => {
+    const updatedHoot = await hootService.updateHoot(hootId, hootFormData);
+    //using map helps preserve ORDER when updating state (remains in same index/place in object)
+    setHoots(hoots.map((hoot) => (
+      hootId === hoot._id ? updatedHoot : hoot
+    )));
+    navigate(`/hoots/${hootId}`);
+  };
+
   useEffect(() => {
     const fetchAllHoots = async () => {
       const hootsData = await hootService.index();
@@ -41,9 +56,22 @@ const App = () => {
         <Route path='/' element={user ? <Dashboard /> : <Landing />} />
         {user ? (
           <>
-            <Route path="/hoots" element={<HootList hoots={hoots} />} />
-            <Route path="/hoots/:hootId" element={<HootDetails />}/>
-            <Route path="/hoots/new" element={<HootForm handleAddHoot={handleAddHoot} />} />
+            <Route
+              path="/hoots"
+              element={<HootList hoots={hoots} />}
+            />
+            <Route
+              path="/hoots/:hootId"
+              element={<HootDetails handleDeleteHoot={handleDeleteHoot} />}
+            />
+            <Route
+              path="/hoots/new"
+              element={<HootForm handleAddHoot={handleAddHoot} />}
+            />
+            <Route
+              path="/hoots/:hootId/edit"
+              element={<HootForm handleUpdateHoot={handleUpdateHoot}/>}
+            />
           </>
         ) : (
           <>
