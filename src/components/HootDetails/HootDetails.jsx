@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
+import CommentForm from '../CommentForm/CommentForm';
 //import * as hootService from '../../services/hootService';
-import { show } from '../../services/hootService'; //best way to import 
+import { show, createComment } from '../../services/hootService'; //best way to import 
 import { useParams } from 'react-router';
 
 
 const HootDetails = (props) => {
     const [hoot, setHoot] = useState(null);//null so can do conditional render if no hootdetails 
     const { hootId } = useParams();
+
+    const handleAddComment = async (commentFormData) => {
+        const newComment = await createComment(hootId, commentFormData);
+        setHoot({...hoot, comments: [...hoot.comments, newComment]});
+    };
 
     useEffect(() => {
         const fetchHoot = async () => {
@@ -33,7 +39,7 @@ const HootDetails = (props) => {
             </section>
             <section>
                 <h2>Comments</h2>
-
+                <CommentForm handleAddComment={handleAddComment} />
                 {!hoot.comments.length && <p>There are no comments.</p>}
 
                 {hoot.comments.map((comment) => (
