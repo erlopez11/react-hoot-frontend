@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
+import { show } from '../../services/hootService'
 
 const HootForm = (props) => {
+    const { hootId } = useParams(); //pulls out id from url
     const [formData, setFormData] = useState({
         title: '',
         text: '',
@@ -13,11 +16,31 @@ const HootForm = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        props.handleAddHoot(formData);
+        if (hootId) {
+            props.handleUpdateHoot(hootId, formData);
+        } else {
+            props.handleAddHoot(formData);
+        }
     };
+
+    useEffect(() => {
+        const fetchHoot = async () => {
+            const hootData = await show(hootId);
+            setFormData(hootData);//fill out form with hoot details so we can edit hoot
+        }
+        if (hootId) fetchHoot();
+        //Clean Up Function: Clear data and set it back to initial state
+        //Undo the effect after we navigate away from edit page (so it doesn't show in new form)
+        return () => setFormData({
+            title: '',
+            text: '',
+            category: 'News',
+        });
+    }, [hootId]); //only set form state to hoot when editing
 
     return (
         <main>
+            <h1>{hootId ? 'Edit Hoot' : 'New Hoot'}</h1>
             <form onSubmit={handleSubmit}>
                 <label htmlFor='title-input'>Title</label>
                 <input
