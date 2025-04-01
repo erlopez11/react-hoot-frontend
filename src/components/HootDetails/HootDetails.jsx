@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import CommentForm from '../CommentForm/CommentForm';
 //import * as hootService from '../../services/hootService';
 import { show, createComment } from '../../services/hootService'; //best way to import 
-import { useParams } from 'react-router';
+import { UserContext } from '../../contexts/UserContext';
+import { useParams, Link } from 'react-router';
 
 
 const HootDetails = (props) => {
     const [hoot, setHoot] = useState(null);//null so can do conditional render if no hootdetails 
+    //access the user using useContext hook & context provider
+    const { user } = useContext(UserContext); 
     const { hootId } = useParams();
 
     const handleAddComment = async (commentFormData) => {
@@ -34,6 +37,14 @@ const HootDetails = (props) => {
                     <p>
                         {`${hoot.author.username} posted on ${new Date(hoot.createdAt).toLocaleDateString()}`}
                     </p>
+                    {hoot.author._id === user._id && (
+                        <>
+                            <Link to={`/hoots/${hootId}/edit`}>Edit</Link>
+                            <button onClick={() => props.handleDeleteHoot(hootId)}>
+                                Delete
+                            </button>
+                        </>
+                    )}
                 </header>
                 <p>{hoot.text}</p>
             </section>
