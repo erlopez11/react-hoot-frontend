@@ -44,22 +44,6 @@ const create = async (hootFormData) => {
     }
 };
 
-const createComment = async (hootId, commentFormData) => {
-    try {
-        const res = await fetch(`${BASE_URL}/${hootId}/comments`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(commentFormData),
-        });
-        return res.json();
-    } catch (error) {
-        console.error(error);
-    }
-};
-
 const deleteHoot = async (hootId) => {
     try {
         const res = await fetch(`${BASE_URL}/${hootId}`, {
@@ -90,6 +74,38 @@ const updateHoot = async (hootId, hootFormData) => {
     }
 };
 
+const createComment = async (hootId, commentFormData) => {
+    try {
+        const res = await fetch(`${BASE_URL}/${hootId}/comments`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(commentFormData),
+        });
+        return res.json();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const deleteComment = async (hootId, commentId) => {
+    try {
+        console.log(hootId);
+        console.log(commentId);
+        const res = await fetch(`${BASE_URL}/${hootId}/comments/${commentId}`, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+        return res.json();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 export{ 
     index, 
     show, 
@@ -97,4 +113,5 @@ export{
     createComment, 
     deleteHoot,
     updateHoot,
+    deleteComment,
 }; //named export syntax used to export multiple fns from a module
