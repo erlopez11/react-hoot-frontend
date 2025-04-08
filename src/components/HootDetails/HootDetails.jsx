@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import CommentForm from '../CommentForm/CommentForm';
 //import * as hootService from '../../services/hootService';
-import { show, createComment } from '../../services/hootService'; //best way to import 
+import { show, createComment, deleteComment} from '../../services/hootService'; //best way to import 
 import { UserContext } from '../../contexts/UserContext';
 import { useParams, Link } from 'react-router';
 
@@ -15,6 +15,12 @@ const HootDetails = (props) => {
     const handleAddComment = async (commentFormData) => {
         const newComment = await createComment(hootId, commentFormData);
         setHoot({...hoot, comments: [...hoot.comments, newComment]});
+    };
+
+    const handleDeleteComment = async (commentId) => {
+        console.log(commentId);
+        const deletedComment = await deleteComment(hootId, commentId);
+        setHoot({...hoot, comments: hoot.comments.filter((comment) => comment._id !== commentId)});
     };
 
     useEffect(() => {
@@ -59,6 +65,12 @@ const HootDetails = (props) => {
                             <p>
                                 {`${comment.author.username} posted on ${new Date(comment.createdAt).toLocaleDateString()}`}
                             </p>
+                            {comment.author._id === user._id && (
+                                <>
+                                    <Link>Edit</Link>
+                                    <button onClick={() => handleDeleteComment(comment._id)}>Delete</button>
+                                </>
+                            )}
                         </header>
                         <p>{comment.text}</p>
                     </article>
